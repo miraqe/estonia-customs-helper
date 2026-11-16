@@ -14,6 +14,8 @@ It files nothing and sends nothing anywhere. Everything you type stays in your b
 
 Open the published page (see the link in the repository's "About" box), or download `index.html` and open it in a browser. There is nothing to install.
 
+The page is in English (`index.html`) and Estonian (`et.html`), with a link between the two at the top.
+
 ## Limits
 
 - Not made or endorsed by the Estonian Tax and Customs Board (EMTA). The person who files a declaration is responsible for every value in it.
@@ -32,6 +34,24 @@ https://github.com/checkdutyrates/us-tariff-data and run:
 
 Then update the "checked on" date in the page footer and in this file.
 
+## Updating the Estonian page
+
+`index.html` is the source. `et.html` is built from it:
+
+    python3 build/make_et.py index.html et.html
+
+The script stops and names the string if any English text it expects has changed, so new or edited text needs its Estonian pair added in `build/make_et.py`.
+
+## Where the duty rates come from
+
+The rates are the EU's own customs tariff rates, the same ones Estonia applies. This project does not read them from the EU directly. It uses a public copy:
+
+- The UK government publishes the EU tariff through its Trade Tariff service, in the part marked "XI" (Northern Ireland, where the EU tariff applies).
+- The open collection `checkdutyrates/us-tariff-data` on GitHub packages that publication as a table. Despite its name, the collection also holds EU data.
+- This project takes the EU table from that collection and embeds the standard third-country rate for each 6-digit heading.
+
+The official sources are the EU's TARIC database and the Estonian customs tariff (ETT). Always confirm a rate there before filing.
+
 ## Data credit
 
-Duty rates contain public sector information licensed under the Open Government Licence v3.0, from the UK Trade Tariff (XI) service, via the checkdutyrates/us-tariff-data collection.
+Contains public sector information licensed under the Open Government Licence v3.0 (UK Trade Tariff, XI service), via the checkdutyrates/us-tariff-data collection. The licence requires this credit.
