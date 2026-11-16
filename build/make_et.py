@@ -203,6 +203,19 @@ P = [
 ("'Lines added. Check each code and add net weights.'", "'Read lisatud. Kontrolli iga kood ja lisa netomassid.'"),
 ("' Set the exchange rate for '", "' Sisesta valuutakurss: '"),
 ("invStatus('Ready.')", "invStatus('Valmis.')"),
+# --- bring your own assistant
+('Read the items with your own AI assistant', 'Loe kaubad oma tehisaru abil'),
+('This site has no AI of its own. You can use your own assistant, such as Claude, and bring the result back here. Your documents go only to the assistant you choose, under your own account.',
+ 'Sellel lehel oma tehisaru ei ole. Saad kasutada enda abilist, näiteks Claudei, ja tuua tulemuse siia tagasi. Sinu dokumendid lähevad ainult sinu valitud abilisele ja sinu enda konto alt.'),
+('<li>Press Copy prompt.</li>', '<li>Vajuta nuppu Kopeeri juhis.</li>'),
+('In your assistant, start a new chat, attach the receipt or invoice (and the waybill if you have it), paste the prompt and send.', 'Alusta oma abilises uut vestlust, lisa ostukviitung või arve (ja võimalusel saateleht), kleebi juhis ja saada.'),
+('Copy the whole answer, paste it into the box below and press Show the lines.', 'Kopeeri kogu vastus, kleebi see allolevasse kasti ja vajuta nuppu Näita ridu.'),
+('>Copy prompt</button>', '>Kopeeri juhis</button>'), ('>Show the lines</button>', '>Näita ridu</button>'),
+("Paste the assistant's answer here", 'Kleebi abilise vastus siia'),
+('Prompt copied. Paste it into your assistant together with the documents.', 'Juhis kopeeritud. Kleebi see oma abilisse koos dokumentidega.'),
+('Copying was blocked. Select the text below and copy it yourself.', 'Kopeerimine ei õnnestunud. Vali allolev tekst ja kopeeri see ise.'),
+("'Paste the answer first.'", "'Kleebi esmalt vastus.'"),
+('That does not look like the answer to the prompt. Copy the whole reply, including the part in curly brackets, and try again.', 'See ei näe välja nagu juhise vastus. Kopeeri kogu vastus koos looksulgudes osaga ja proovi uuesti.'),
 ]
 missing = [a[:60] for a, b in P if a not in h]
 if missing:
