@@ -83,6 +83,7 @@ footer p{margin:0}
 <header>
   <h1>Customs Declaration Helper</h1>
   <p>An unofficial helper for parcels arriving in Estonia from outside the EU. It files nothing. It picks the form, estimates the tax, and lists what to enter in each e-MTA field. The example below uses made-up details. What you type stays in your browser and is gone when you close or reload the page.</p>
+  <p class="note" id="langlink" hidden><a href="et.html">Eesti keeles</a></p>
 </header>
 
 <section>
@@ -566,6 +567,7 @@ function applyProposal() {
   invStatus('Lines added. Check each code and add net weights.' + (cur === 'EUR' ? '' : ' Set the exchange rate for ' + (cur || 'the invoice currency') + '.'));
 }
 
+if (location.protocol === 'file:' || /github\.io$/.test(location.hostname)) $('langlink').hidden = false;
 $('readinv').addEventListener('click', readInvoice);
 (async () => {
   try { sampleFn = (window.claude && window.claude.use) ? await window.claude.use('sample') : null; } catch (e) { sampleFn = null; }
