@@ -75,6 +75,9 @@ footer p{margin:0}
 #proposal table td{font-size:13px}
 #proposal .kv{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
 #proposal .kv b{font-weight:500;color:var(--muted)}
+.invoice ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+textarea{font:400 13px var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 9px;width:100%;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 [hidden]{display:none !important}
 </style>
 </head>
@@ -133,8 +136,23 @@ footer p{margin:0}
       <button class="primary" id="readinv" type="button" disabled>Loe dokumendid</button>
       <span class="note" id="invstatus">Kontrollin, kas dokumentide lugemine on selles vaates võimalik.</span>
     </div>
-    <div id="proposal" hidden></div>
   </div>
+  <div class="invoice" id="aibox" hidden>
+    <h3>Loe kaubad oma tehisaru abil</h3>
+    <p class="note">Sellel lehel oma tehisaru ei ole. Saad kasutada enda abilist, näiteks Claudei, ja tuua tulemuse siia tagasi. Sinu dokumendid lähevad ainult sinu valitud abilisele ja sinu enda konto alt.</p>
+    <ol class="note">
+      <li>Vajuta nuppu Kopeeri juhis.</li>
+      <li>Alusta oma abilises uut vestlust, lisa ostukviitung või arve (ja võimalusel saateleht), kleebi juhis ja saada.</li>
+      <li>Kopeeri kogu vastus, kleebi see allolevasse kasti ja vajuta nuppu Näita ridu.</li>
+    </ol>
+    <label>Mida tead kauba kohta, mida dokumentidel kirjas ei ole? (materjal, kasutusotstarve)
+      <input id="aihint" placeholder="Näiteks: polüesterkangas, mille ühel poolel on liimkile, laiformaatprintimiseks"></label>
+    <div class="row"><button class="primary" id="aicopy" type="button">Kopeeri juhis</button><span class="note" id="aistatus"></span></div>
+    <textarea id="aiprompt" rows="5" readonly hidden></textarea>
+    <textarea id="aipaste" rows="5" placeholder="Kleebi abilise vastus siia"></textarea>
+    <div class="row"><button class="primary" id="aishow" type="button">Näita ridu</button></div>
+  </div>
+  <div id="proposal" hidden></div>
   <div class="tablewrap">
     <table id="items">
       <thead><tr><th>Kirjeldus</th><th>Kaubakood (10 numbrit)</th><th>Päritolu</th><th>Tükke</th><th>Neto kg</th><th>Hind</th><th>Tollimaks %</th><th></th></tr></thead>
@@ -438,7 +456,7 @@ Rules:
 - Do not include buyer names, addresses, phone numbers or emails anywhere in the output.`;
 
 let sampleFn = null, proposal = null;
-const invStatus = t => { $('invstatus').textContent = t; };
+const invStatus = t => { $('invstatus').textContent = t; $('aistatus').textContent = t; };
 
 function loadScript(src) {
   return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src)); document.head.appendChild(s); });
@@ -569,9 +587,30 @@ function applyProposal() {
 
 if (location.protocol === 'file:' || /github\.io$/.test(location.hostname)) $('langlink').hidden = false;
 $('readinv').addEventListener('click', readInvoice);
+
+/* ---------- Bring your own assistant: copy a prompt, paste the answer back ---------- */
+function aiPrompt() {
+  const hint = $('aihint').value.trim();
+  return PROMPT + (hint ? '\n\nThe importer, who has seen the goods, adds this. Treat it as fact and use it for the description and the code: ' + hint.slice(0, 600) : '') + '\n\nThe documents are attached to this message. Reply with the JSON only, in one code block.';
+}
+$('aicopy').addEventListener('click', async () => {
+  const txt = aiPrompt();
+  try { await navigator.clipboard.writeText(txt); $('aiprompt').hidden = true; invStatus('Juhis kopeeritud. Kleebi see oma abilisse koos dokumentidega.'); }
+  catch (e) { const ta = $('aiprompt'); ta.value = txt; ta.hidden = false; ta.focus(); ta.select(); invStatus('Kopeerimine ei õnnestunud. Vali allolev tekst ja kopeeri see ise.'); }
+});
+$('aishow').addEventListener('click', () => {
+  const raw = $('aipaste').value.trim();
+  if (!raw) { invStatus('Kleebi esmalt vastus.'); return; }
+  const a = raw.indexOf('{'), b = raw.lastIndexOf('}');
+  let out = null;
+  if (a >= 0 && b > a) { try { out = JSON.parse(raw.slice(a, b + 1)); } catch (e) { out = null; } }
+  if (!out || !Array.isArray(out.items) || !out.items.length) { invStatus('See ei näe välja nagu juhise vastus. Kopeeri kogu vastus koos looksulgudes osaga ja proovi uuesti.'); return; }
+  proposal = out; showProposal(); invStatus('Vaata allolev ettepanek üle.');
+});
 (async () => {
   try { sampleFn = (window.claude && window.claude.use) ? await window.claude.use('sample') : null; } catch (e) { sampleFn = null; }
   if (sampleFn) { $('invoicebox').hidden = false; $('readinv').disabled = false; invStatus('Valmis.'); }
+  else $('aibox').hidden = false;
 })();
 </script>
 </body>
