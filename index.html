@@ -75,6 +75,9 @@ footer p{margin:0}
 #proposal table td{font-size:13px}
 #proposal .kv{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
 #proposal .kv b{font-weight:500;color:var(--muted)}
+.invoice ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+textarea{font:400 13px var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 9px;width:100%;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 [hidden]{display:none !important}
 </style>
 </head>
@@ -133,8 +136,23 @@ footer p{margin:0}
       <button class="primary" id="readinv" type="button" disabled>Read invoice</button>
       <span class="note" id="invstatus">Checking whether invoice reading is available in this view.</span>
     </div>
-    <div id="proposal" hidden></div>
   </div>
+  <div class="invoice" id="aibox" hidden>
+    <h3>Read the items with your own AI assistant</h3>
+    <p class="note">This site has no AI of its own. You can use your own assistant, such as Claude, and bring the result back here. Your documents go only to the assistant you choose, under your own account.</p>
+    <ol class="note">
+      <li>Press Copy prompt.</li>
+      <li>In your assistant, start a new chat, attach the receipt or invoice (and the waybill if you have it), paste the prompt and send.</li>
+      <li>Copy the whole answer, paste it into the box below and press Show the lines.</li>
+    </ol>
+    <label>What do you know about the goods that the documents don't say? (material, what it is used for)
+      <input id="aihint" placeholder="For example: polyester fabric with an adhesive film on one side, for wide-format printing"></label>
+    <div class="row"><button class="primary" id="aicopy" type="button">Copy prompt</button><span class="note" id="aistatus"></span></div>
+    <textarea id="aiprompt" rows="5" readonly hidden></textarea>
+    <textarea id="aipaste" rows="5" placeholder="Paste the assistant's answer here"></textarea>
+    <div class="row"><button class="primary" id="aishow" type="button">Show the lines</button></div>
+  </div>
+  <div id="proposal" hidden></div>
   <div class="tablewrap">
     <table id="items">
       <thead><tr><th>Description</th><th>Commodity code (10 digits)</th><th>Origin</th><th>Pieces</th><th>Net kg</th><th>Price</th><th>Duty %</th><th></th></tr></thead>
@@ -438,7 +456,7 @@ Rules:
 - Do not include buyer names, addresses, phone numbers or emails anywhere in the output.`;
 
 let sampleFn = null, proposal = null;
-const invStatus = t => { $('invstatus').textContent = t; };
+const invStatus = t => { $('invstatus').textContent = t; $('aistatus').textContent = t; };
 
 function loadScript(src) {
   return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src)); document.head.appendChild(s); });
@@ -569,9 +587,30 @@ function applyProposal() {
 
 if (location.protocol === 'file:' || /github\.io$/.test(location.hostname)) $('langlink').hidden = false;
 $('readinv').addEventListener('click', readInvoice);
+
+/* ---------- Bring your own assistant: copy a prompt, paste the answer back ---------- */
+function aiPrompt() {
+  const hint = $('aihint').value.trim();
+  return PROMPT + (hint ? '\n\nThe importer, who has seen the goods, adds this. Treat it as fact and use it for the description and the code: ' + hint.slice(0, 600) : '') + '\n\nThe documents are attached to this message. Reply with the JSON only, in one code block.';
+}
+$('aicopy').addEventListener('click', async () => {
+  const txt = aiPrompt();
+  try { await navigator.clipboard.writeText(txt); $('aiprompt').hidden = true; invStatus('Prompt copied. Paste it into your assistant together with the documents.'); }
+  catch (e) { const ta = $('aiprompt'); ta.value = txt; ta.hidden = false; ta.focus(); ta.select(); invStatus('Copying was blocked. Select the text below and copy it yourself.'); }
+});
+$('aishow').addEventListener('click', () => {
+  const raw = $('aipaste').value.trim();
+  if (!raw) { invStatus('Paste the answer first.'); return; }
+  const a = raw.indexOf('{'), b = raw.lastIndexOf('}');
+  let out = null;
+  if (a >= 0 && b > a) { try { out = JSON.parse(raw.slice(a, b + 1)); } catch (e) { out = null; } }
+  if (!out || !Array.isArray(out.items) || !out.items.length) { invStatus('That does not look like the answer to the prompt. Copy the whole reply, including the part in curly brackets, and try again.'); return; }
+  proposal = out; showProposal(); invStatus('Review the proposal below.');
+});
 (async () => {
   try { sampleFn = (window.claude && window.claude.use) ? await window.claude.use('sample') : null; } catch (e) { sampleFn = null; }
   if (sampleFn) { $('invoicebox').hidden = false; $('readinv').disabled = false; invStatus('Ready.'); }
+  else $('aibox').hidden = false;
 })();
 </script>
 </body>
