@@ -12,11 +12,45 @@ It files nothing and sends nothing anywhere. Everything you type stays in your b
 
 ## Use it
 
-**Open the helper: [Customs Declaration Helper](https://miraqe.github.io/estonia-customs-helper/)**
+**Open the helper: [Customs Declaration Helper](https://miraqe.github.io/estonia-customs-helper-eng/)**
 
 You can also download `index.html` and open it in a browser. There is nothing to install.
 
-The page is in English and Estonian ([Tollideklaratsiooni abiline](https://miraqe.github.io/estonia-customs-helper/et.html)), with a link between the two at the top.
+The page is in English and Estonian ([Tollideklaratsiooni abiline](https://miraqe.github.io/estonia-customs-helper-eng/et.html)), with a link between the two at the top.
+
+## Reading your invoice with your own AI assistant
+
+The page has no AI of its own, so it never sees your documents. If you have an AI assistant such as Claude, you can let it read the invoice and bring the result back to the page. Your documents then go only to the assistant you choose, under your own account and its privacy settings.
+
+### The quick way: copy a prompt, paste the answer back
+
+1. Open the helper and scroll to "Read the items with your own AI assistant" in step 2.
+2. If you know something the paperwork does not say, such as what the goods are made of, type it into the box there. This helps the assistant choose a commodity code.
+3. Press **Copy prompt**.
+4. Open your AI assistant in another tab and start a new chat.
+5. Attach your receipt or invoice. If you have the carrier's waybill, attach that too.
+6. Paste the prompt into the message box and send it.
+7. The assistant answers with a block of text in curly brackets. Copy the whole answer.
+8. Go back to the helper, paste the answer into the large box, and press **Show the lines**.
+9. A table appears with the seller, currency, shipping cost and one row for each item. If your documents disagree with each other, for example on quantity or value, a warning says where.
+10. Untick any row you do not want, then press **Use the ticked lines**. The items, tax estimate and e-MTA field list fill in.
+11. Check every suggested commodity code. Each one is marked "Code suggested by AI" until you edit it. Then add net weights, the exchange rate and your carrier details.
+
+If the page says the text does not look like the answer, copy the assistant's reply again from its first curly bracket to its last, and paste it once more.
+
+### The simple way: ask, then type
+
+If you would rather not copy and paste code-like text:
+
+1. Open your AI assistant and attach the invoice.
+2. Ask: "From this invoice, list the seller and country, the currency, the shipping cost, and for each item the description, quantity, line total and a suggested 8-digit EU commodity code."
+3. Open the helper and type those values into step 2: seller, currency and shipping in the boxes, and one row per item in the table.
+4. The duty rate fills in from each code, and the rest of the page updates as you type.
+
+### Before you rely on the result
+
+- A suggested commodity code is a starting point. The code decides the duty, and the person who files is responsible for it. Confirm it in the Estonian customs tariff (ETT).
+- Black out names, addresses and phone numbers on your documents if you prefer the assistant not to see them. The assistant only needs the item lines, prices and shipping cost.
 
 ## Limits
 
