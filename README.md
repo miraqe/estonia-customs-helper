@@ -12,9 +12,11 @@ It files nothing and sends nothing anywhere. Everything you type stays in your b
 
 ## Use it
 
-Open the published page (see the link in the repository's "About" box), or download `index.html` and open it in a browser. There is nothing to install.
+**Open the helper: [Customs Declaration Helper](https://miraqe.github.io/estonia-customs-helper-eng/)**
 
-The page is in English (`index.html`) and Estonian (`et.html`), with a link between the two at the top.
+You can also download `index.html` and open it in a browser. There is nothing to install.
+
+The page is in English and Estonian ([Tollideklaratsiooni abiline](https://miraqe.github.io/estonia-customs-helper-eng/et.html)), with a link between the two at the top.
 
 ## Limits
 
